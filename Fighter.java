@@ -30,28 +30,70 @@ public class Fighter {
 		if (person.getDeckCards().size()>0) {
 			System.out.println(person.getName() + ", you have " + person.getPips() + 
 					((person.getPips() != 1) ? " pips." : " pip.") + "(" + person.getPowerPips() +
-					" power, " + person.getNormalPips() + " normal) Select card to use: " 
+					" power, " + person.getNormalPips() + " normal) Select card to use: "
+					+ "(or type pass to pass)" 
 					+ person.getDeck());
 			String toUse = s.nextLine();
 			
-			// Check if chosen card is valid
-			boolean valid = false;
-			for (Card x : person.getDeckCards()) {
-				if (x.getName().equalsIgnoreCase(toUse)) {
-					using = x;
-					valid = true;
-				}
+			// Check if pass
+			if (toUse.equals("pass")) {
+				System.out.println(person.getName() + " passed!");
 			}
-			while (!valid && person.getDeckCards().size()>0) {
-				System.out.println("Invalid selection.\nSelect a card to use: " + person.getDeck());
-				toUse = s.nextLine();
+			// Check if chosen card is valid
+			else {
+				boolean valid = false;
+			
+				boolean issueIsCost = false;
+				boolean issueIsMana = false;
 				for (Card x : person.getDeckCards()) {
 					if (x.getName().equalsIgnoreCase(toUse)) {
-						using = x;
-						valid = true;
+						if (x.getCost() <= person.getMana()) {
+							if (x.getCost() <= person.getPips()) {
+								using = x;
+								valid = true;
+							}
+							else {
+								issueIsCost = true;
+							}
+						}
+						else {
+							issueIsMana = true;
+						}
 					}
 				}
-			}		
+				while (!valid && person.getDeckCards().size()>0) {
+					System.out.println(((!issueIsCost && !issueIsMana) ? "Invalid selection." : 
+						(issueIsMana) ? "Out of mana!" : "Not enough pips.") + 
+							"\nSelect a card to use (or type pass to pass): " + person.getDeck());
+					issueIsCost = false;
+					issueIsMana = false;
+					toUse = s.nextLine();
+					// check if pass
+					if (toUse.equals("pass")) {
+						System.out.println(person.getName() + " passed!");
+						valid = true;
+					}
+					// otherwise, check if valid
+					else {
+						for (Card x : person.getDeckCards()) {
+							if (x.getName().equalsIgnoreCase(toUse)) {
+								if (x.getCost() <= person.getMana()) {
+									if (x.getCost() <= person.getPips()) {
+										using = x;
+										valid = true;
+									}
+									else {
+										issueIsCost = true;
+									}
+								}
+								else {
+									issueIsMana = true;
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		else {
 			System.out.println(person.getName() + " is out of cards! (Press Enter)");

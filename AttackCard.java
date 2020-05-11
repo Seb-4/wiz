@@ -76,7 +76,9 @@ public class AttackCard implements Card {
 	
 	@Override
 	public void use(Player self, Player enemy) {
+		self.removeMana(this.cost);
 		if (Math.random()*100 < this.accuracy) {
+			self.removePips(this.cost);
 			int damage = (int) Math.round(Math.random()*(maxDamage-minDamage)+minDamage);
 			System.out.println("\n" + self.getName() + " used " + this.name + " dealing " + damage +  " damage!\n");
 			enemy.hurt(damage);
